@@ -26,9 +26,6 @@ __pycache__/
 .DS_Store
 Thumbs.db
 
-# Resume files (sensitive data)
-Resume/*.pdf
-
 # Distribution / packaging
 *.egg-info/
 dist/
