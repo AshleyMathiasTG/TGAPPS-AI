@@ -39,58 +39,70 @@ def extract_text_from_pdf(pdf_path):
 def extract_structured_fields(text):
     client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
-    prompt = f"""
+    system_prompt = """
 You are a STRICT ATS resume parser.
 
 Your task is to extract structured data ONLY from the provided resume text.
 
-IMPORTANT RULES (must follow):
-1. Extract ONLY information that is explicitly present in the resume text.
-2. DO NOT guess, infer, assume, normalize, or fabricate any data.
-3. If a field is not present, return an empty string ("") or empty list ([]).
-4. Do NOT repeat entries.
-5. Do NOT duplicate sections.
-6. Return VALID JSON ONLY that strictly matches the schema.
-7. Do NOT add explanations, comments, or extra text.
+STRICT RULES (Must Follow):
+1. Extract ONLY information that is explicitly and clearly present in the resume.
+2. DO NOT guess, infer, assume, normalize, or fabricate any values under any circumstances.
+3. Return only fields and structure matching the defined schema exactly.
+4. If a value is not available, return an empty string ("") or empty list ([]) as appropriate.
+5. NEVER include duplicated entries or repeated sections.
+6. DO NOT include any additional text, explanations, formatting, or comments—ONLY return valid JSON.
 
-SECTION HANDLING RULES:
-- Treat sections such as "SKILLS", "KEY COMPETENCIES", "CORE SKILLS", or similar as SKILLS.
-- Treat sections such as "EXPERIENCE", "WORK EXPERIENCE", or "PROFESSIONAL EXPERIENCE" as EXPERIENCE.
-- Treat addresses only if explicitly written as a location or address.
+SECTION RULES:
 
-EDUCATION RULES:
-- Extract multiple education entries if present.
-- Identify the highest degree ONLY by comparing degrees explicitly mentioned.
-- Do NOT assume dates, results, or percentages.
-- Extract education dates EXACTLY as written in the resume.
-- If a single year is mentioned (e.g., "2021"), return that year.
-- If a range is mentioned (e.g., "2025 - 2029" or "2029–2030"), return the FULL RANGE STRING exactly as written.
-- Do NOT convert ranges into a single year.
-- Do NOT infer missing start or end years.
-- Do NOT normalize or reformat date ranges.
-- If no date is mentioned, return an empty string.
+EDUCATION:
+- Extract all education entries explicitly stated.
+- Fields include: degree, subject, year_passed (as written), result, college_university, percentage.
+- Identify the highest degree based on title only and set `is_highest` to true for that one.
+- Use date formats exactly as written—if a single year, return that; if a range (e.g., "2020–2022"), return the full range string.
+- Do NOT split or infer missing start/end years.
+- Do NOT reformat dates or ranges.
+- Leave year_passed empty if no date is mentioned.
 
-EXPERIENCE RULES:
-- Extract multiple experience entries in chronological order.
+EXPERIENCE:
+- Parse all clearly written job entries in reverse chronological order (most recent first).
+- Fields include: organization, job_title, location, start_date, end_date.
 - Use "Present" only if explicitly written.
-- Projects must belong ONLY to their respective experience.
-- If salary, hike, or pay unit is not present, leave it empty.
+- Each experience must contain a list of projects, if project descriptions are present in that job entry.
+- If multiple roles at the same company exist, treat them as separate entries.
+- DO NOT guess project names—use only if named. Project details must be tied directly to the job.
+- Leave `last_pay_rate`, `pay_uom`, `last_hike_date` empty if not clearly mentioned.
 
-SKILLS RULES:
-- Extract skills as individual entries.
-- Use skillset_type ONLY if explicitly mentioned (e.g., Technical, Soft Skills).
-- Do NOT infer years of experience or last used dates.
+SKILLS:
+- Extract every clearly mentioned skill or tool as a distinct entry.
+- DO NOT group unrelated tools or platforms under a single skill name.
+- Use `skillset_type` only if explicitly given (e.g., "Technical", "Soft Skills").
+- Leave `years` and `last_used` blank unless those values are directly mentioned with the skill.
 
-ADDRESS RULES:
-- Extract only addresses explicitly present.
-- Do NOT infer address start or end dates.
+ADDRESSES:
+- Extract any explicit addresses, locations, or place names mentioned as standalone or within education/experience.
+- Each address must be treated as an independent entry under `"addresses"`.
+- DO NOT infer timelines—set `start_date_active` and `end_date_active` as empty.
+- Example: If "Mumbai, India" or "Bangalore, Karnataka 560001" is mentioned, treat it as an address.
 
-OUTPUT FORMAT:
-Return a SINGLE JSON object using EXACTLY this schema:
+CONTACT DETAILS:
+- Extract `emails`, `contact_numbers`, `linkedin_url`, and `date_of_birth` ONLY if they are clearly visible.
+- For phone numbers, avoid extracting date ranges that resemble numbers (e.g., "2020–2022").
+- For LinkedIn, match only correct LinkedIn URLs.
 
-{{
+DUPLICATE HANDLING:
+- Avoid repeating any skill, project, experience, or education entry more than once.
+- Skills with minor case or punctuation variations must be considered the same.
+
+JSON OUTPUT FORMAT:
+Return a single valid JSON object matching EXACTLY this schema:
+
+{
+  "emails": [],
+  "contact_numbers": [],
+  "linkedin_url": null,
+  "date_of_birth": null,
   "education": [
-    {{
+    {
       "degree": "",
       "subject": "",
       "year_passed": "",
@@ -98,10 +110,10 @@ Return a SINGLE JSON object using EXACTLY this schema:
       "college_university": "",
       "percentage": "",
       "is_highest": false
-    }}
+    }
   ],
   "experience": [
-    {{
+    {
       "organization": "",
       "job_title": "",
       "location": "",
@@ -111,41 +123,42 @@ Return a SINGLE JSON object using EXACTLY this schema:
       "pay_uom": "",
       "last_hike_date": "",
       "projects": [
-        {{
+        {
           "project_name": "",
           "project_details": ""
-        }}
+        }
       ]
-    }}
+    }
   ],
   "skills": [
-    {{
+    {
       "skillset_type": "",
       "skill_name": "",
       "years": "",
       "last_used": ""
-    }}
+    }
   ],
   "addresses": [
-    {{
+    {
       "address": "",
       "start_date_active": "",
       "end_date_active": ""
-    }}
+    }
   ]
-}}
+}
 
-Resume Text:
-{text}
+ONLY return this JSON structure and nothing else.
+
 """
 
+    user_prompt = f"Resume Text:\n{text}"
 
     response = client.chat.completions.create(
         model="gpt-4.1-mini",
         temperature=0,
         messages=[
-            {"role": "system", "content": "You are a strict ATS resume parser."},
-            {"role": "user", "content": prompt}
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": user_prompt}
         ]
     )
 
@@ -175,7 +188,7 @@ def parse_resume(pdf_path):
 # -------------------------
 
 if __name__ == "__main__":
-    pdf_path = "Resume/resume4.pdf"  # <-- put your resume path here
+    pdf_path = "Resume/resume7.pdf"  # <-- put your resume path here
 
     if not os.path.exists(pdf_path):
         raise FileNotFoundError("Resume PDF not found")
