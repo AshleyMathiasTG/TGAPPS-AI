@@ -165,80 +165,10 @@ ONLY return this JSON structure and nothing else.
     return json.loads(response.choices[0].message.content)
 
 # -------------------------
-# JD-BASED SKILL FILTERING
-# -------------------------
-
-def read_jd_file(jd_path):
-    """Read Job Description from a text file."""
-    if not os.path.exists(jd_path):
-        return ""
-    with open(jd_path, 'r', encoding='utf-8') as f:
-        return f.read()
-
-def filter_skills_by_jd(extracted_skills, jd_text):
-    """
-    Filter extracted skills to only include those explicitly present in the JD.
-    Uses a separate minimal LLM prompt for conservative, high-precision matching.
-    """
-    if not jd_text or not extracted_skills:
-        return []
-    
-    client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
-    
-    skill_names = [skill.get("skill_name", "") for skill in extracted_skills]
-    
-    filter_prompt = """
-You are a strict skill matching system.
-
-Given a list of skills extracted from a resume and a Job Description (JD), return ONLY the skills that are EXPLICITLY present in BOTH.
-
-STRICT MATCHING RULES:
-1. A skill is included ONLY if it appears explicitly in the JD text.
-2. DO NOT infer related or similar skills (e.g., if JD says "Python" don't match "Python 3" unless explicitly stated).
-3. DO NOT add new skills not in the resume.
-4. Match must be exact or clearly equivalent (case-insensitive is OK).
-5. If no skills match, return an empty list.
-
-Return ONLY a JSON array of matching skill names, nothing else.
-
-Example output format: ["Python", "SQL", "Excel"]
-"""
-    
-    user_prompt = f"""Job Description:
-{jd_text}
-
-Resume Skills:
-{json.dumps(skill_names)}
-
-Return only the matching skills as a JSON array."""
-    
-    response = client.chat.completions.create(
-        model="gpt-4.1-mini",
-        temperature=0,
-        messages=[
-            {"role": "system", "content": filter_prompt},
-            {"role": "user", "content": user_prompt}
-        ]
-    )
-    
-    try:
-        matched_skill_names = json.loads(response.choices[0].message.content)
-    except:
-        return []
-    
-    # Filter original skill objects to keep only matched ones
-    filtered_skills = []
-    for skill in extracted_skills:
-        if skill.get("skill_name", "") in matched_skill_names:
-            filtered_skills.append(skill)
-    
-    return filtered_skills
-
-# -------------------------
 # MAIN PIPELINE
 # -------------------------
 
-def parse_resume(pdf_path, jd_path=None):
+def parse_resume(pdf_path):
     text = extract_text_from_pdf(pdf_path)
 
     result = {
@@ -250,12 +180,6 @@ def parse_resume(pdf_path, jd_path=None):
 
     structured = extract_structured_fields(text)
     result.update(structured)
-    
-    # Apply JD-based skill filtering if JD is provided
-    if jd_path:
-        jd_text = read_jd_file(jd_path)
-        if jd_text:
-            result["skills"] = filter_skills_by_jd(result.get("skills", []), jd_text)
 
     return result
 
@@ -265,11 +189,10 @@ def parse_resume(pdf_path, jd_path=None):
 
 if __name__ == "__main__":
     pdf_path = "Resume/resume7.pdf"  # <-- put your resume path here
-    jd_path = "jds/data_analyst.txt" # <-- set to JD file path for skill filtering (e.g., "jds/data_analyst.txt")
 
     if not os.path.exists(pdf_path):
         raise FileNotFoundError("Resume PDF not found")
 
-    parsed_data = parse_resume(pdf_path, jd_path)
+    parsed_data = parse_resume(pdf_path)
 
     print(json.dumps(parsed_data, indent=2, ensure_ascii=False))

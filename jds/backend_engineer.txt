@@ -1,0 +1,9 @@
+Backend Engineer responsibilities include:
+- Python or Node.js
+- REST APIs
+- Databases (PostgreSQL / MySQL)
+- System Design
+- Authentication & Authorization
+- Cloud platforms (AWS)
+- Docker
+- CI/CD pipelines

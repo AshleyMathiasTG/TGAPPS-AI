@@ -1,0 +1,11 @@
+We are looking for a Data Analyst with strong experience in:
+- Python
+- Pandas
+- NumPy
+- SQL
+- Data Cleaning
+- Data Visualization
+- Excel
+- Business Analysis
+- Statistics
+- Dashboarding (Power BI / Tableau)

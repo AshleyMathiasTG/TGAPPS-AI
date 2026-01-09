@@ -1,0 +1,10 @@
+We are hiring a GenAI Engineer with hands-on experience in:
+- Python
+- Large Language Models (LLMs)
+- Prompt Engineering
+- LangChain
+- RAG (Retrieval Augmented Generation)
+- Vector Databases (FAISS, Chroma)
+- OpenAI APIs
+- NLP
+- Automation workflows
