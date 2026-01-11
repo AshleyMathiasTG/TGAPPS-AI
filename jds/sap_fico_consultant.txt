@@ -1,0 +1,30 @@
+Section	Details
+Job Title	SAP FICO Functional Consultant (Customer Front ending)
+Job Summary	Responsible for customer-facing SAP FICO consulting, gathering business requirements, designing SAP solutions, and supporting end-to-end implementation and support activities. Acts as a trusted advisor to business stakeholders.
+Key Responsibilities	• Primary customer-facing contact for SAP FICO
+• Conduct requirement gathering, workshops, and fit-gap analysis
+• Configure SAP FI (GL, AP, AR, AA, Bank Accounting)
+• Configure SAP CO (CCA, IO, PCA, COPA)
+• Prepare functional specifications for technical teams
+• Lead/support UAT and issue resolution
+• Deliver customer demos, presentations, and training
+• Support data migration, cutover, and go-live
+• Collaborate with MM, SD, ABAP, BASIS teams
+• Provide post-go-live support and improvements
+Required Experience	• 5+ years SAP FICO experience
+• Strong customer-front ending experience
+• End-to-end SAP implementation or rollout experience
+Required Skills	• SAP FI & CO configuration expertise
+• Business process and accounting knowledge
+• Stakeholder management
+• Communication and presentation skills
+Preferred Qualifications	• SAP FICO Certification
+• S/4HANA Finance experience
+• Integration with MM & SD
+• Global implementation experience
+Soft Skills	• Customer-focused mindset
+• Analytical and problem-solving skills
+• Ability to work independently and in teams
+ 
+Industry Exposure (Optional): Retail, IT Services
+

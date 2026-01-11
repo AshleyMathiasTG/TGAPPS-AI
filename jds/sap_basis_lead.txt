@@ -1,0 +1,42 @@
+Job Description: SAP BASIS lead Consultant (10-12 Years Experience)
+Position Summary
+We are seeking an experienced SAP BASIS lead Consultant with 10-12 years of hands-on experience in SAP system administration, SOX audit compliance, and S/4HANA Cloud migration activities. The ideal candidate will have a proven track record in managing complex SAP landscapes, ensuring high system availability, supporting audit and security requirements, and leading technical migration and transformation initiatives.
+Key Responsibilities
+SAP BASIS Administration lead
+Manage end-to-end SAP BASIS operations across SAP ECC, S/4HANA, BW, PO/PI, Solution Manager, GRC, and related components.
+Perform system monitoring, performance tuning, kernel upgrades, transport management, job administration, and system refreshes.
+Ensure high availability, scalability, and stability of SAP systems across development, QA, and production environments.
+Maintain Dev/QA/UAT support landscape integrated with Salesforce, MES and other enterprise systems, Plan and build project landscape as needed for large project.
+Provide singular support point for infra issues to the functional team by developing an understanding of how server, network and firewalls are set up, experience in handling P1/P2 situations by working through the teams
+Monitor batch job, reruns based on the rerun documentation.
+Ensure 24x7 on-call coverage between 3 Basis leads for off India hours and to cover absence of US onsite administration
+Experience in IBP implementation
+Experience in SAP integrations and BTP set up
+Peer review of Basis changes
+SOX Audit & Compliance
+Lead and support SAP technical compliance activities aligned with SOX controls and corporate governance requirements.
+Prepare required documentation, evidence, and reports for internal and external audits.
+Implement and enforce SAP security standards, access controls, and change management policies.
+Collaborate with Security, Internal Controls, and Risk teams to ensure ongoing compliance.
+S/4HANA Cloud Migration
+Lead or support SAP S/4HANA Cloud migration activities, including system readiness, technical assessments, and cutover planning.
+Coordinate and execute migration tasks such as system provisioning, integration setup, data migration support, interface validations, and performance optimization.
+Work closely with functional, basis, and cloud platform teams to ensure smooth transition and post-migration stabilization.
+Technical Expertise
+Strong hands-on experience with SAP HANA administration, performance tuning, backup and recovery, and system replication.
+Understanding of SAP Cloud ALM, SAP BTP, and cloud architecture (Azure/AWS/GCP) is preferred.
+Experience with SAP Support Packs, OSS notes, and system maintenance activities.
+Strong knowledge of SAP transport landscapes, ChaRM, and change management processes.
+Qualifications & Skills
+Bachelor's degree in Computer Science, Information Technology, or related field.
+10-12 years of experience as an SAP BASIS administrator in large, complex SAP environments.
+Proven experience handling SOX audit processes and technical compliance requirements.
+Experience in SAP S/4HANA Cloud migration or conversion projects.
+Strong analytical and problem-solving skills with the ability to troubleshoot complex technical issues.
+Excellent communication, documentation, and stakeholder management abilities.
+Ability to work independently and lead technical initiatives.
+Preferred Certifications
+SAP Certified Technology Associate – System Administration (HANA or NetWeaver).
+Cloud certifications (Azure, AWS, GCP) are an advantage.
+ITIL certification preferred.
+

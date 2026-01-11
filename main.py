@@ -1,8 +1,25 @@
 import os
 import re
 import json
+import sys
 import pdfplumber
-from openai import OpenAI
+from openai import OpenAI, OpenAIError, APIError, RateLimitError, APIConnectionError
+
+# -------------------------
+# OPENAI CLIENT (SINGLETON)
+# -------------------------
+
+_openai_client = None
+
+def get_openai_client():
+    """Get or create a singleton OpenAI client instance."""
+    global _openai_client
+    if _openai_client is None:
+        api_key = os.getenv("OPENAI_API_KEY")
+        if not api_key:
+            raise ValueError("OPENAI_API_KEY environment variable is not set")
+        _openai_client = OpenAI(api_key=api_key)
+    return _openai_client
 
 # -------------------------
 # REGEX EXTRACTORS
@@ -29,15 +46,30 @@ def extract_dob(text):
 # -------------------------
 
 def extract_text_from_pdf(pdf_path):
-    with pdfplumber.open(pdf_path) as pdf:
-        return "\n".join(page.extract_text() or "" for page in pdf.pages)
+    """Extract text from PDF with error handling."""
+    try:
+        with pdfplumber.open(pdf_path) as pdf:
+            if not pdf.pages:
+                raise ValueError(f"PDF file '{pdf_path}' has no pages")
+            return "\n".join(page.extract_text() or "" for page in pdf.pages)
+    except FileNotFoundError:
+        raise FileNotFoundError(f"PDF file not found: {pdf_path}")
+    except Exception as e:
+        raise RuntimeError(f"Failed to extract text from PDF '{pdf_path}': {str(e)}")
 
 # -------------------------
 # LLM STRUCTURED EXTRACTION
 # -------------------------
 
 def extract_structured_fields(text):
-    client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+    """Extract structured fields from resume text using LLM with error handling."""
+    if not text or not text.strip():
+        raise ValueError("Resume text is empty")
+    
+    try:
+        client = get_openai_client()
+    except ValueError as e:
+        raise ValueError(f"OpenAI client initialization failed: {str(e)}")
 
     system_prompt = """
 You are a STRICT ATS resume parser.
@@ -153,84 +185,342 @@ ONLY return this JSON structure and nothing else.
 
     user_prompt = f"Resume Text:\n{text}"
 
-    response = client.chat.completions.create(
-        model="gpt-4.1-mini",
-        temperature=0,
-        messages=[
-            {"role": "system", "content": system_prompt},
-            {"role": "user", "content": user_prompt}
-        ]
-    )
-
-    return json.loads(response.choices[0].message.content)
+    try:
+        response = client.chat.completions.create(
+            model="gpt-4.1-mini",
+            temperature=0,
+            messages=[
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": user_prompt}
+            ]
+        )
+        
+        content = response.choices[0].message.content
+        if not content:
+            raise ValueError("Empty response from OpenAI API")
+        
+        return json.loads(content)
+        
+    except RateLimitError:
+        raise RuntimeError("OpenAI API rate limit exceeded. Please try again later.")
+    except APIConnectionError as e:
+        raise RuntimeError(f"Failed to connect to OpenAI API: {str(e)}")
+    except APIError as e:
+        raise RuntimeError(f"OpenAI API error: {str(e)}")
+    except json.JSONDecodeError as e:
+        raise RuntimeError(f"Failed to parse LLM response as JSON: {str(e)}")
+    except (KeyError, IndexError) as e:
+        raise RuntimeError(f"Unexpected response structure from OpenAI: {str(e)}")
+    except OpenAIError as e:
+        raise RuntimeError(f"OpenAI error: {str(e)}")
 
 # -------------------------
 # JD-BASED SKILL FILTERING
 # -------------------------
 
 def read_jd_file(jd_path):
-    """Read Job Description from a text file."""
-    if not os.path.exists(jd_path):
+    """Read Job Description from a text file with error handling."""
+    if not jd_path:
         return ""
-    with open(jd_path, 'r', encoding='utf-8') as f:
-        return f.read()
+    
+    if not os.path.exists(jd_path):
+        print(f"Warning: JD file not found: {jd_path}. Skipping skill filtering.", file=sys.stderr)
+        return ""
+    
+    try:
+        with open(jd_path, 'r', encoding='utf-8') as f:
+            content = f.read().strip()
+            if not content:
+                print(f"Warning: JD file is empty: {jd_path}. Skipping skill filtering.", file=sys.stderr)
+            return content
+    except UnicodeDecodeError as e:
+        print(f"Warning: Failed to read JD file (encoding issue): {jd_path}. {str(e)}", file=sys.stderr)
+        return ""
+    except Exception as e:
+        print(f"Warning: Failed to read JD file: {jd_path}. {str(e)}", file=sys.stderr)
+        return ""
 
-def filter_skills_by_jd(extracted_skills, jd_text):
+def extract_jd_skills(jd_text):
     """
-    Filter extracted skills to only include those explicitly present in the JD.
-    Uses a separate minimal LLM prompt for conservative, high-precision matching.
+    Extract skills explicitly mentioned in the Job Description.
+    Returns a list of skill names that are explicitly written in the JD.
     """
-    if not jd_text or not extracted_skills:
+    if not jd_text:
         return []
     
-    client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+    try:
+        client = get_openai_client()
+    except ValueError as e:
+        print(f"Warning: JD skill extraction skipped - {str(e)}", file=sys.stderr)
+        return []
     
-    skill_names = [skill.get("skill_name", "") for skill in extracted_skills]
-    
-    filter_prompt = """
-You are a strict skill matching system.
+    extract_prompt = """
+You are an intelligent skill extraction system for Job Descriptions that handles multiple JD formats.
 
-Given a list of skills extracted from a resume and a Job Description (JD), return ONLY the skills that are EXPLICITLY present in BOTH.
+TASK: Extract ALL skills that are EXPLICITLY mentioned in the Job Description, regardless of format.
 
-STRICT MATCHING RULES:
-1. A skill is included ONLY if it appears explicitly in the JD text.
-2. DO NOT infer related or similar skills (e.g., if JD says "Python" don't match "Python 3" unless explicitly stated).
-3. DO NOT add new skills not in the resume.
-4. Match must be exact or clearly equivalent (case-insensitive is OK).
-5. If no skills match, return an empty list.
+JD FORMATS TO HANDLE:
+1. STRUCTURED SECTIONS: Look for sections like:
+   - "Technology Scope", "Required Skills", "Technical Skills", "Qualifications & Skills"
+   - "Key Responsibilities" (may contain embedded skills)
+   - "Requirements", "Preferred Qualifications", "Experience"
+   - Any section header that suggests skills/technologies
 
-Return ONLY a JSON array of matching skill names, nothing else.
+2. EXPLICIT LISTS: Extract from bullet points, numbered lists, or comma-separated lists
+   Example: "VDI: VMware Horizon VDI, Azure Virtual Desktop (AVD)" → Extract both
 
-Example output format: ["Python", "SQL", "Excel"]
+3. NARRATIVE TEXT: Extract skills embedded in sentences
+   Example: "Strong expertise in VDI, Endpoint Management, and Endpoint Security" → Extract all three
+
+4. TABLE FORMATS: Extract from structured tables with skill columns
+
+SKILL CATEGORIES TO EXTRACT:
+- Technologies, tools, platforms (e.g., VMware, SAP, Python, AWS, Oracle, JIRA, Confluence)
+- Software and systems (e.g., SAP ECC, S/4HANA, Salesforce, MES)
+- Methodologies and frameworks (e.g., Agile, Scrum, DevOps, ITIL)
+- Governance and compliance (e.g., SOX Compliance, ITGC, Risk Management)
+- Infrastructure and security (e.g., Active Directory, SCCM, Intune, VDI, HANA)
+- Process and management skills (e.g., Project Management, Vendor Management, Process Improvements)
+- Certifications (e.g., SAP Certified, ITIL certification, Atlassian certifications)
+- Cloud platforms (e.g., Azure, AWS, GCP, SAP BTP)
+- Integration technologies (e.g., SAP PO/PI, Solution Manager, GRC)
+
+EXTRACTION RULES:
+1. Extract skills from ALL relevant sections:
+   - Technology/Technical sections (explicit lists)
+   - Required Skills/Qualifications sections
+   - Key Responsibilities (if skills are mentioned)
+   - Preferred Qualifications
+   - Experience requirements (if specific technologies mentioned)
+
+2. Handle different presentation styles:
+   - "VDI: VMware Horizon VDI, Azure Virtual Desktop" → Extract: ["VMware Horizon VDI", "Azure Virtual Desktop", "AVD", "VDI"]
+   - "SAP ECC, S/4HANA, BW, PO/PI" → Extract: ["SAP ECC", "S/4HANA", "BW", "PO/PI", "SAP"]
+   - "Jira and Confluence" → Extract: ["Jira", "Confluence"]
+   - "Strong experience with SAP HANA" → Extract: ["SAP HANA", "HANA"]
+
+3. Extract both full names and common abbreviations:
+   - "Microsoft SCCM" → Extract: ["Microsoft SCCM", "SCCM"]
+   - "SAP S/4HANA" → Extract: ["SAP S/4HANA", "S/4HANA"]
+   - "Azure Virtual Desktop (AVD)" → Extract: ["Azure Virtual Desktop", "AVD"]
+
+4. Extract from narrative descriptions:
+   - "Experience in SAP integrations and BTP set up" → Extract: ["SAP", "SAP BTP", "BTP"]
+   - "Configure SAP FI (GL, AP, AR, AA, Bank Accounting)" → Extract: ["SAP FI", "SAP GL", "SAP AP", "SAP AR", "SAP AA", "Bank Accounting"]
+
+5. DO NOT infer or assume:
+   - "daily stand-ups" → Do NOT extract "Agile" or "Scrum" (not explicitly mentioned)
+   - "customer-facing" → Do NOT extract "Communication" (too generic, not a skill)
+   - Only extract if the skill name is clearly stated
+
+6. Handle certifications:
+   - "SAP Certified Technology Associate" → Extract: ["SAP Certified", "SAP Certification"]
+   - "ITIL certification preferred" → Extract: ["ITIL"]
+   - "Atlassian certifications (Jira/Confluence Administrator)" → Extract: ["Jira", "Confluence", "Atlassian"]
+
+EXAMPLES FROM DIFFERENT FORMATS:
+
+Example 1 - Structured Section:
+JD: "Technology Scope (Must Have)
+VDI: VMware Horizon VDI, Azure Virtual Desktop (AVD)
+Endpoint Management: Microsoft SCCM, Microsoft Intune"
+Extract: ["VMware Horizon VDI", "Azure Virtual Desktop", "AVD", "VDI", "Microsoft SCCM", "SCCM", "Microsoft Intune", "Intune", "Endpoint Management"]
+
+Example 2 - Narrative Text:
+JD: "Strong expertise in VDI, Endpoint Management, and Endpoint Security"
+Extract: ["VDI", "Endpoint Management", "Endpoint Security"]
+
+Example 3 - Requirements Section:
+JD: "Technical Skills:
+• Proficiency in Jira and Confluence administration
+• Experience with ITSM tools"
+Extract: ["Jira", "Confluence", "ITSM"]
+
+Example 4 - Embedded in Responsibilities:
+JD: "Manage end-to-end SAP BASIS operations across SAP ECC, S/4HANA, BW, PO/PI"
+Extract: ["SAP BASIS", "SAP ECC", "S/4HANA", "BW", "PO/PI", "SAP"]
+
+Return ONLY a JSON array of skill names (normalized to lowercase), nothing else.
+Example: ["vmware horizon vdi", "microsoft sccm", "jira", "sap ecc", "s/4hana"]
 """
     
     user_prompt = f"""Job Description:
 {jd_text}
 
-Resume Skills:
-{json.dumps(skill_names)}
+INSTRUCTIONS:
+1. Read through the ENTIRE Job Description carefully
+2. Identify ALL sections that mention skills, technologies, tools, or competencies:
+   - Look for section headers like "Technology Scope", "Required Skills", "Technical Skills", "Qualifications", "Requirements"
+   - Check "Key Responsibilities" for embedded skill mentions
+   - Review "Preferred Qualifications" and "Experience" sections
+3. Extract skills from:
+   - Explicit lists (bullet points, comma-separated, colon-separated)
+   - Narrative text (e.g., "Strong experience with X, Y, and Z")
+   - Table formats if present
+4. Extract both full names and abbreviations when both are mentioned
+5. Return all extracted skills as a JSON array (lowercase)
 
-Return only the matching skills as a JSON array."""
-    
-    response = client.chat.completions.create(
-        model="gpt-4.1-mini",
-        temperature=0,
-        messages=[
-            {"role": "system", "content": filter_prompt},
-            {"role": "user", "content": user_prompt}
-        ]
-    )
+Extract all explicitly mentioned skills as a JSON array."""
     
     try:
-        matched_skill_names = json.loads(response.choices[0].message.content)
-    except:
+        response = client.chat.completions.create(
+            model="gpt-4.1-mini",
+            temperature=0,
+            messages=[
+                {"role": "system", "content": extract_prompt},
+                {"role": "user", "content": user_prompt}
+            ]
+        )
+        
+        content = response.choices[0].message.content
+        if not content:
+            print("Warning: Empty response from JD skill extraction API.", file=sys.stderr)
+            return []
+        
+        jd_skills = json.loads(content)
+        
+        if not isinstance(jd_skills, list):
+            print("Warning: Invalid JD skill extraction response format.", file=sys.stderr)
+            return []
+        
+        # Normalize to lowercase for comparison
+        jd_skills_normalized = [skill.lower().strip() for skill in jd_skills if skill]
+        print(f"Extracted {len(jd_skills_normalized)} skills from JD", file=sys.stderr)
+        
+        return jd_skills_normalized
+        
+    except RateLimitError:
+        print("Warning: OpenAI API rate limit exceeded during JD skill extraction.", file=sys.stderr)
+        return []
+    except (APIConnectionError, APIError, OpenAIError) as e:
+        print(f"Warning: OpenAI API error during JD skill extraction: {str(e)}.", file=sys.stderr)
+        return []
+    except json.JSONDecodeError as e:
+        print(f"Warning: Failed to parse JD skill extraction response: {str(e)}.", file=sys.stderr)
+        return []
+    except Exception as e:
+        print(f"Warning: Unexpected error during JD skill extraction: {str(e)}.", file=sys.stderr)
+        return []
+
+
+def match_resume_skills_with_jd(resume_skill_names, jd_skills):
+    """
+    Match resume skills against extracted JD skills.
+    Returns a list of resume skill names that match JD skills.
+    """
+    if not resume_skill_names or not jd_skills:
         return []
     
-    # Filter original skill objects to keep only matched ones
-    filtered_skills = []
-    for skill in extracted_skills:
-        if skill.get("skill_name", "") in matched_skill_names:
-            filtered_skills.append(skill)
+    try:
+        client = get_openai_client()
+    except ValueError as e:
+        print(f"Warning: Skill matching skipped - {str(e)}", file=sys.stderr)
+        return []
+    
+    match_prompt = """
+You are a skill matching system for ATS (Applicant Tracking System).
+
+TASK: Match resume skills against JD skills and return only the matching ones.
+
+MATCHING RULES:
+1. Match if the resume skill is the same as a JD skill (case-insensitive)
+2. Match if the resume skill is a variant/version of a JD skill:
+   - JD: "Python" → Resume: "Python 3", "Python 3.9" ✓
+   - JD: "SQL" → Resume: "MySQL", "PostgreSQL", "MS SQL" ✓
+   - JD: "VMware Horizon" → Resume: "VMware", "VMware VDI" ✓
+   - JD: "Oracle EBS" → Resume: "Oracle R12", "Oracle E-Business Suite" ✓
+3. Match semantically similar skills:
+   - JD: "Project Management" → Resume: "Program Management", "PMO" ✓
+   - JD: "Process Improvements" → Resume: "Process Improvements", "Process Optimization" ✓
+4. DO NOT match if the skill is NOT in the JD skills list (even if related)
+5. DO NOT add skills that are not in the resume skills list
+6. Return complete skill names from the resume (not partial names)
+7. When in doubt, DO NOT match (prioritize precision)
+
+Return ONLY a JSON array of matching resume skill names, nothing else.
+Example: ["Python 3", "MySQL", "Project Management"]
+"""
+    
+    user_prompt = f"""JD Skills (extracted from Job Description):
+{json.dumps(jd_skills)}
+
+Resume Skills:
+{json.dumps(resume_skill_names)}
+
+Return only the matching resume skills as a JSON array."""
+    
+    try:
+        response = client.chat.completions.create(
+            model="gpt-4.1-mini",
+            temperature=0,
+            messages=[
+                {"role": "system", "content": match_prompt},
+                {"role": "user", "content": user_prompt}
+            ]
+        )
+        
+        content = response.choices[0].message.content
+        if not content:
+            print("Warning: Empty response from skill matching API.", file=sys.stderr)
+            return []
+        
+        matched_skill_names = json.loads(content)
+        
+        if not isinstance(matched_skill_names, list):
+            print("Warning: Invalid skill matching response format.", file=sys.stderr)
+            return []
+        
+        print(f"Matched {len(matched_skill_names)} resume skills with JD skills", file=sys.stderr)
+        return matched_skill_names
+        
+    except RateLimitError:
+        print("Warning: OpenAI API rate limit exceeded during skill matching.", file=sys.stderr)
+        return []
+    except (APIConnectionError, APIError, OpenAIError) as e:
+        print(f"Warning: OpenAI API error during skill matching: {str(e)}.", file=sys.stderr)
+        return []
+    except json.JSONDecodeError as e:
+        print(f"Warning: Failed to parse skill matching response: {str(e)}.", file=sys.stderr)
+        return []
+    except Exception as e:
+        print(f"Warning: Unexpected error during skill matching: {str(e)}.", file=sys.stderr)
+        return []
+
+
+def filter_skills_by_jd(extracted_skills, jd_text):
+    """
+    Filter extracted skills to only include those explicitly present in the JD.
+    Uses a two-step process: first extract JD skills, then match resume skills.
+    """
+    if not jd_text or not extracted_skills:
+        return []
+    
+    # Step 1: Extract skills explicitly mentioned in the JD
+    jd_skills = extract_jd_skills(jd_text)
+    
+    if not jd_skills:
+        print("Warning: No skills extracted from JD. Returning empty skills list.", file=sys.stderr)
+        return []
+    
+    # Step 2: Get resume skill names
+    skill_names = [skill.get("skill_name", "") for skill in extracted_skills if skill.get("skill_name")]
+    
+    if not skill_names:
+        return []
+    
+    print(f"Resume has {len(skill_names)} skills to match against {len(jd_skills)} JD skills", file=sys.stderr)
+    
+    # Step 3: Match resume skills with JD skills
+    matched_skill_names = match_resume_skills_with_jd(skill_names, jd_skills)
+    
+    if not matched_skill_names:
+        return []
+    
+    # Step 4: Filter original skill objects to keep only matched ones
+    filtered_skills = [
+        skill for skill in extracted_skills 
+        if skill.get("skill_name", "") in matched_skill_names
+    ]
     
     return filtered_skills
 
@@ -239,15 +529,42 @@ Return only the matching skills as a JSON array."""
 # -------------------------
 
 def parse_resume(pdf_path, jd_path=None):
+    """
+    Parse resume from PDF with optional JD-based skill filtering.
+    
+    Args:
+        pdf_path: Path to the resume PDF file
+        jd_path: Optional path to Job Description text file
+    
+    Returns:
+        dict: Parsed resume data
+    
+    Raises:
+        FileNotFoundError: If PDF file not found
+        ValueError: If invalid input or API configuration
+        RuntimeError: If processing fails
+    """
+    # Extract text from PDF
     text = extract_text_from_pdf(pdf_path)
-
-    result = {
-        "emails": extract_emails(text),
-        "contact_numbers": extract_phone_numbers(text),
-        "linkedin_url": extract_linkedin(text),
-        "date_of_birth": extract_dob(text)
-    }
-
+    
+    # Extract regex-based fields (safe operations)
+    try:
+        result = {
+            "emails": extract_emails(text),
+            "contact_numbers": extract_phone_numbers(text),
+            "linkedin_url": extract_linkedin(text),
+            "date_of_birth": extract_dob(text)
+        }
+    except Exception as e:
+        print(f"Warning: Error during regex extraction: {str(e)}. Using empty values.", file=sys.stderr)
+        result = {
+            "emails": [],
+            "contact_numbers": [],
+            "linkedin_url": None,
+            "date_of_birth": None
+        }
+    
+    # Extract structured fields using LLM
     structured = extract_structured_fields(text)
     result.update(structured)
     
@@ -264,12 +581,44 @@ def parse_resume(pdf_path, jd_path=None):
 # -------------------------
 
 if __name__ == "__main__":
-    pdf_path = "Resume/resume7.pdf"  # <-- put your resume path here
-    jd_path = "jds/data_analyst.txt" # <-- set to JD file path for skill filtering (e.g., "jds/data_analyst.txt")
+    pdf_path = "Resume/resume9.pdf"  
+    jd_path = "jds/EUC_Delivery_lead.txt" 
 
-    if not os.path.exists(pdf_path):
-        raise FileNotFoundError("Resume PDF not found")
-
-    parsed_data = parse_resume(pdf_path, jd_path)
-
-    print(json.dumps(parsed_data, indent=2, ensure_ascii=False))
+    try:
+        # Validate input
+        if not pdf_path:
+            print("Error: PDF path is required", file=sys.stderr)
+            sys.exit(1)
+        
+        if not os.path.exists(pdf_path):
+            print(f"Error: Resume PDF not found: {pdf_path}", file=sys.stderr)
+            sys.exit(1)
+        
+        # Parse resume
+        print(f"Processing resume: {pdf_path}", file=sys.stderr)
+        if jd_path:
+            print(f"Applying JD filtering from: {jd_path}", file=sys.stderr)
+        
+        parsed_data = parse_resume(pdf_path, jd_path)
+        
+        # Output results
+        print(json.dumps(parsed_data, indent=2, ensure_ascii=False))
+        print("\n✓ Resume parsing completed successfully", file=sys.stderr)
+        
+    except FileNotFoundError as e:
+        print(f"Error: {str(e)}", file=sys.stderr)
+        sys.exit(1)
+    except ValueError as e:
+        print(f"Error: {str(e)}", file=sys.stderr)
+        sys.exit(1)
+    except RuntimeError as e:
+        print(f"Error: {str(e)}", file=sys.stderr)
+        sys.exit(1)
+    except KeyboardInterrupt:
+        print("\n\nOperation cancelled by user", file=sys.stderr)
+        sys.exit(130)
+    except Exception as e:
+        print(f"Unexpected error: {str(e)}", file=sys.stderr)
+        import traceback
+        traceback.print_exc()
+        sys.exit(1)

@@ -1,0 +1,44 @@
+Job Description: Jira & Confluence Operational Support Admin
+Position Overview
+We are seeking a dedicated Jira and Confluence Operational Support Admin to provide
+day-to-day operational support for our Atlassian tools.
+The ideal candidate will be responsible for supporting user issues, managing roles and
+access, provisioning project spaces, and handling L1 and L2 incidents related to Jira and
+Confluence.
+Key Responsibilities
+• Operational Support
+• Provide timely support for Jira and Confluence user issues and queries.
+• Troubleshoot and resolve L1 (basic) and L2 (intermediate) incidents related
+to Jira and Confluence platforms.
+• Escalate complex issues to relevant teams as required.
+• User & Access Management
+• Create, modify, and manage user roles and permissions within Jira and
+Confluence.
+• Ensure appropriate access controls are maintained in accordance with
+organizational policies.
+• Project Space Provisioning
+• Set up and configure new project spaces in Jira and Confluence per user or
+team requests.
+• Maintain documentation and templates for efficient project space creation.
+• Incident Handling
+• Monitor and respond to incident tickets for Jira and Confluence.
+• Perform root cause analysis for recurring issues and recommend preventive
+actions.
+• Collaboration & Documentation
+• Collaborate with IT and other support teams for cross-platform issues.
+• Maintain clear documentation of processes, incidents, and resolutions.
+Requirements
+• Experience: 3-5 years of hands-on experience administering Jira and Confluence.
+• Technical Skills:
+• Proficiency in Jira and Confluence administration (user management,
+permissions, project space setup).
+• Basic understanding of incident management workflows.
+• Familiarity with Atlassian best practices.
+• Soft Skills:
+• problem-solving and communication skills.
+• Ability to prioritize and manage multiple tasks simultaneously.
+• Customer-focused attitude.
+Preferred Qualifications
+• Experience with ITSM tools and processes.
+• Atlassian certifications (Jira/Confluence Administrator) are a plus.
+

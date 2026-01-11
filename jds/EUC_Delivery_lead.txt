@@ -1,0 +1,38 @@
+Job Title: EUC Delivery Lead / EUC Tower Lead
+Location: Bengaluru, India (Onsite – 5 Days Work from Office)
+Employment Type: Full-time
+Role Summary
+The EUC Delivery Lead is accountable for end-to-end steady-state service delivery across critical End User Computing (EUC) towers. This role requires a hands-on technical leader who ensures service stability, team productivity, operational governance, and superior customer experience within a managed services environment.
+Technology Scope (Must Have)
+VDI: VMware Horizon VDI, Azure Virtual Desktop (AVD)
+Endpoint Management: Microsoft SCCM, Microsoft Intune
+Endpoint Security: Microsoft Defender (Endpoint / AV / EDR)
+Key Responsibilities
+Service Delivery & Customer Experience
+Own SLA, KPI, and OLA performance across EUC towers
+Drive CSAT/NPS outcomes through service quality and delivery excellence
+Act as the escalation point for critical incidents and service risks
+Technical Leadership
+Maintain 9/10 hands-on proficiency in at least one core EUC technology
+Provide technical oversight, guidance, and escalation support
+Analyze incident trends and drive root-cause resolution
+Team & Delivery Governance
+Hire, manage, and mentor EUC delivery teams
+Drive productivity via daily stand-ups, onsite governance, and delivery discipline
+Utilize tools such as JIRA for task tracking, workload management, and reporting
+Process, SOPs & Compliance
+Design, document, and enforce Standard Operating Procedures (SOPs)
+Ensure compliance with client standards, security controls, and audit requirements
+Risk & Continuous Improvement
+Identify delivery and operational risks proactively
+Lead mitigation and contingency planning
+Drive process improvements, efficiency gains, automation, and best-practice adoption
+Required Experience & Skills
+10+ years in EUC / End User Computing within IT Services or Managed Services
+Strong expertise in VDI, Endpoint Management, and Endpoint Security
+Proven experience hiring and managing delivery teams
+Strong understanding of RUN operations and service governance
+Excellent communication, documentation, and stakeholder management skills
+RUN-focused delivery leader with strong technical depth
+Process-driven, metrics-oriented, and customer-first mindset
+Comfortable operating in high-availability, enterprise environments
