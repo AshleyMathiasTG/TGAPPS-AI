@@ -1,0 +1,46 @@
+Job Title: Machine Learning Engineer / ML Engineer
+Location: Remote / Hybrid (Flexible)
+Employment Type: Full-time
+Role Summary
+The Machine Learning Engineer is responsible for designing, developing, and deploying machine learning models and ML systems. This role requires expertise in ML algorithms, model training, MLOps, and production deployment to build scalable and reliable ML solutions.
+Technology Scope (Must Have)
+ML Frameworks: TensorFlow, PyTorch, Scikit-learn, XGBoost
+Programming: Python, R, SQL
+MLOps: MLflow, Kubeflow, Docker, Kubernetes
+Cloud ML Platforms: AWS SageMaker, Azure ML, GCP Vertex AI
+Data Processing: Pandas, NumPy, Apache Spark
+Model Deployment: FastAPI, Flask, REST APIs
+Databases: PostgreSQL, MongoDB, Redis
+Version Control: Git, DVC (Data Version Control)
+Key Responsibilities
+Model Development & Training
+Design and develop machine learning models for various use cases
+Train, validate, and optimize models for performance
+Implement feature engineering and data preprocessing pipelines
+MLOps & Model Deployment
+Build and maintain MLOps pipelines for model training and deployment
+Implement model versioning, monitoring, and A/B testing
+Deploy models to production using containerization and cloud platforms
+Data Pipeline Integration
+Integrate ML models with data pipelines and production systems
+Ensure data quality and feature consistency
+Collaborate with data engineers on data infrastructure
+Model Performance & Monitoring
+Monitor model performance in production
+Implement model retraining and update strategies
+Troubleshoot model issues and optimize performance
+Research & Innovation
+Stay updated with latest ML research and technologies
+Experiment with new algorithms and techniques
+Contribute to ML best practices and standards
+Required Experience & Skills
+4+ years of experience in machine learning engineering or data science
+Strong expertise in TensorFlow, PyTorch, and ML frameworks
+Proven experience with Python, SQL, and data processing libraries
+Hands-on experience with MLOps tools (MLflow, Kubeflow)
+Experience with cloud ML platforms (AWS SageMaker, Azure ML, GCP Vertex AI)
+Strong understanding of ML algorithms, model training, and evaluation
+Experience with model deployment, REST APIs, and containerization
+Excellent problem-solving and analytical skills
+Experience with Git, Docker, Kubernetes, and CI/CD pipelines
+Strong communication skills and ability to work in cross-functional teams

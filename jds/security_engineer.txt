@@ -1,0 +1,46 @@
+Job Title: Security Engineer / Cybersecurity Engineer
+Location: Remote / Hybrid (Flexible)
+Employment Type: Full-time
+Role Summary
+The Security Engineer is responsible for designing, implementing, and maintaining security infrastructure, security controls, and security monitoring systems. This role requires expertise in cybersecurity, threat detection, vulnerability management, and security compliance to protect organizational assets and data.
+Technology Scope (Must Have)
+Security Tools: SIEM (Splunk, QRadar, Sentinel), IDS/IPS, Firewalls, WAF
+Cloud Security: AWS Security (IAM, CloudTrail, GuardDuty), Azure Security (Azure AD, Sentinel), GCP Security
+Vulnerability Management: Nessus, Qualys, OpenVAS, Burp Suite
+Identity & Access Management: Okta, Azure AD, AWS IAM, LDAP
+Encryption: SSL/TLS, PGP, Key Management (AWS KMS, Azure Key Vault)
+Security Frameworks: OWASP, NIST, ISO 27001, SOC 2
+Scripting: Python, PowerShell, Bash
+Networking: VPN, Firewall Rules, Network Segmentation
+Key Responsibilities
+Security Infrastructure & Implementation
+Design and implement security controls and security architecture
+Configure and maintain security tools (SIEM, firewalls, IDS/IPS)
+Implement identity and access management (IAM) solutions
+Threat Detection & Incident Response
+Monitor security events and detect potential threats
+Respond to security incidents and conduct forensic analysis
+Investigate security breaches and implement remediation
+Vulnerability Management & Assessment
+Conduct vulnerability assessments and penetration testing
+Manage vulnerability remediation and patching processes
+Perform security audits and compliance assessments
+Security Compliance & Governance
+Ensure compliance with security standards (ISO 27001, SOC 2, NIST)
+Implement security policies and procedures
+Conduct security training and awareness programs
+Process & Documentation
+Document security configurations, procedures, and incidents
+Maintain security runbooks and playbooks
+Collaborate with IT and development teams on security requirements
+Required Experience & Skills
+5+ years of experience in cybersecurity or information security
+Strong expertise in SIEM tools (Splunk, QRadar, Sentinel)
+Proven experience with cloud security (AWS, Azure, GCP)
+Hands-on experience with vulnerability management and penetration testing
+Strong understanding of security frameworks (OWASP, NIST, ISO 27001)
+Experience with identity and access management (IAM) solutions
+Proficiency in Python, PowerShell, or Bash scripting
+Excellent problem-solving and analytical skills
+Security certifications (CISSP, CEH, GSEC) preferred
+Strong communication skills and ability to work in cross-functional teams

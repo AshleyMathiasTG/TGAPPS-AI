@@ -1,0 +1,45 @@
+Job Title: Cloud Solutions Architect / Senior Cloud Architect
+Location: Remote / Hybrid (Flexible)
+Employment Type: Full-time
+Role Summary
+The Cloud Solutions Architect is responsible for designing, architecting, and implementing scalable cloud-based solutions. This role requires deep expertise in cloud platforms, architecture patterns, and enterprise-level system design, ensuring optimal performance, security, and cost-efficiency for cloud deployments.
+Technology Scope (Must Have)
+Cloud Platforms: AWS (EC2, S3, Lambda, RDS, VPC, IAM), Azure (Azure Functions, Azure SQL, Azure AD), GCP (Compute Engine, Cloud Storage, Cloud Functions)
+Architecture Patterns: Microservices, Serverless, Event-Driven Architecture, API Gateway
+Containerization: Docker, Kubernetes, EKS, AKS, GKE
+Infrastructure as Code: Terraform, CloudFormation, ARM Templates
+Databases: AWS RDS, Azure SQL, DynamoDB, Cosmos DB, PostgreSQL, MongoDB
+Networking: VPC, VPN, Load Balancers, CDN (CloudFront, Azure CDN)
+Security: IAM, Security Groups, WAF, Encryption, Key Management
+Key Responsibilities
+Solution Design & Architecture
+Design scalable, secure, and cost-effective cloud architectures
+Create architecture diagrams, technical specifications, and design documents
+Evaluate and recommend cloud services and technologies
+Cloud Implementation & Migration
+Lead cloud migration projects from on-premises to cloud
+Implement multi-cloud and hybrid cloud solutions
+Optimize cloud infrastructure for performance and cost
+Technical Leadership & Guidance
+Provide technical guidance to development and operations teams
+Conduct architecture reviews and ensure best practices
+Mentor junior architects and engineers
+Security & Compliance
+Design security architectures and compliance frameworks
+Implement identity and access management (IAM) strategies
+Ensure adherence to security standards and regulatory requirements
+Process & Documentation
+Document architecture decisions and design patterns
+Create runbooks, migration plans, and technical documentation
+Collaborate with stakeholders to gather requirements
+Required Experience & Skills
+8+ years of experience in cloud architecture, system design, or infrastructure engineering
+Strong expertise in AWS, Azure, or GCP (multi-cloud experience preferred)
+Proven experience designing and implementing cloud solutions
+Deep understanding of microservices, serverless, and distributed systems
+Experience with Infrastructure as Code (Terraform, CloudFormation)
+Strong knowledge of networking, security, and compliance in cloud environments
+Excellent communication, presentation, and stakeholder management skills
+Cloud certifications (AWS Solutions Architect, Azure Solutions Architect) preferred
+Experience with Docker, Kubernetes, and containerization
+Strong problem-solving and analytical skills

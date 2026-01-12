@@ -1,0 +1,45 @@
+Job Title: DevOps Engineer / Cloud DevOps Specialist
+Location: Bengaluru, India (Hybrid - 3 Days Work from Office)
+Employment Type: Full-time
+Role Summary
+The DevOps Engineer is accountable for designing, implementing, and maintaining CI/CD pipelines, infrastructure automation, and cloud-based solutions. This role requires hands-on expertise in cloud platforms, containerization, infrastructure as code, and continuous integration/deployment practices within a fast-paced development environment.
+Technology Scope (Must Have)
+Cloud Platforms: AWS (EC2, S3, Lambda, CloudFormation), Azure (Azure DevOps, ARM Templates), GCP
+Containerization: Docker, Kubernetes, EKS, AKS
+CI/CD Tools: Jenkins, GitHub Actions, GitLab CI, Azure DevOps Pipelines
+Infrastructure as Code: Terraform, Ansible, CloudFormation
+Monitoring & Logging: Prometheus, Grafana, CloudWatch, ELK Stack, Splunk
+Scripting: Python, Bash, PowerShell
+Version Control: Git, GitHub, GitLab, Bitbucket
+Key Responsibilities
+CI/CD Pipeline Development & Maintenance
+Design, build, and maintain automated CI/CD pipelines
+Implement automated testing, deployment, and rollback strategies
+Ensure fast and reliable software delivery cycles
+Infrastructure Automation & Management
+Manage cloud infrastructure using Infrastructure as Code (IaC)
+Automate provisioning, configuration, and scaling of resources
+Implement container orchestration and containerization strategies
+Monitoring & Observability
+Set up monitoring, alerting, and logging solutions
+Analyze system performance and optimize resource utilization
+Troubleshoot production issues and ensure system reliability
+Security & Compliance
+Implement security best practices in infrastructure and pipelines
+Manage secrets, access controls, and compliance requirements
+Conduct security audits and vulnerability assessments
+Team Collaboration & Process
+Collaborate with development teams to improve deployment processes
+Document infrastructure, processes, and runbooks
+Drive DevOps best practices and tool adoption
+Required Experience & Skills
+6+ years of experience in DevOps, Cloud Engineering, or SRE roles
+Strong expertise in AWS, Azure, or GCP cloud platforms
+Proven experience with Docker, Kubernetes, and container orchestration
+Hands-on experience with CI/CD tools (Jenkins, GitHub Actions, Azure DevOps)
+Proficiency in Infrastructure as Code (Terraform, Ansible, CloudFormation)
+Strong scripting skills (Python, Bash, PowerShell)
+Experience with monitoring tools (Prometheus, Grafana, CloudWatch)
+Excellent problem-solving skills and ability to work under pressure
+Strong understanding of Linux/Unix systems and networking
+Experience with Git, JIRA, and agile methodologies

@@ -1,0 +1,46 @@
+Job Title: QA Automation Engineer / Test Automation Engineer
+Location: Bengaluru, India (Hybrid - 3 Days Work from Office)
+Employment Type: Full-time
+Role Summary
+The QA Automation Engineer is accountable for designing, developing, and maintaining automated test frameworks and test suites. This role requires expertise in test automation tools, scripting, and CI/CD integration to ensure high-quality software delivery through comprehensive automated testing.
+Technology Scope (Must Have)
+Test Automation Frameworks: Selenium, Cypress, Playwright, TestNG, JUnit
+Programming: Java, Python, JavaScript, TypeScript
+API Testing: REST Assured, Postman, SoapUI, pytest
+CI/CD Integration: Jenkins, GitHub Actions, Azure DevOps, GitLab CI
+Version Control: Git, GitHub, GitLab
+Test Management: JIRA, TestRail, Zephyr
+Databases: SQL, PostgreSQL, MySQL
+Containerization: Docker, Kubernetes
+Key Responsibilities
+Test Automation Development
+Design and develop automated test frameworks and test suites
+Create reusable test libraries and utilities
+Implement test automation for web, API, and mobile applications
+Test Execution & Reporting
+Execute automated test suites in CI/CD pipelines
+Generate test reports and analyze test results
+Maintain and update test scripts for application changes
+Quality Assurance & Testing
+Perform manual testing when required
+Design test cases, test plans, and test strategies
+Identify, report, and track defects using bug tracking tools
+CI/CD Integration & Process
+Integrate automated tests into CI/CD pipelines
+Ensure continuous testing and quality gates
+Collaborate with development teams on test coverage
+Process & Documentation
+Document test automation frameworks and processes
+Maintain test documentation and test data
+Contribute to QA best practices and standards
+Required Experience & Skills
+4+ years of experience in QA automation or test engineering
+Strong expertise in Selenium, Cypress, or Playwright
+Proven experience with Java, Python, or JavaScript for test automation
+Hands-on experience with API testing tools (REST Assured, Postman)
+Experience with CI/CD tools (Jenkins, GitHub Actions, Azure DevOps)
+Strong understanding of test automation frameworks and best practices
+Experience with Git, JIRA, and test management tools
+Excellent problem-solving and debugging skills
+Experience with Docker, Kubernetes, and containerization
+Strong communication skills and ability to work in agile teams

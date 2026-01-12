@@ -1,0 +1,45 @@
+Job Title: Full Stack Developer / Senior Full Stack Engineer
+Location: Remote / Hybrid (Flexible)
+Employment Type: Full-time
+Role Summary
+The Full Stack Developer is responsible for designing, developing, and maintaining end-to-end web applications. This role requires expertise in both frontend and backend technologies, with a focus on building scalable, secure, and high-performance applications within an agile development environment.
+Technology Scope (Must Have)
+Frontend: React, JavaScript, TypeScript, HTML5, CSS3
+Backend: Node.js, Python, Express.js, FastAPI
+Databases: PostgreSQL, MongoDB, MySQL
+Cloud Platforms: AWS (EC2, S3, Lambda), Azure
+DevOps: Docker, Kubernetes, CI/CD (Jenkins, GitHub Actions)
+Authentication: OAuth 2.0, JWT, Session Management
+Key Responsibilities
+Application Development & Architecture
+Design and develop scalable full-stack web applications
+Implement RESTful APIs and microservices architecture
+Build responsive and intuitive user interfaces
+Ensure code quality through code reviews and best practices
+Technical Leadership
+Maintain proficiency in modern web development frameworks
+Provide technical guidance to junior developers
+Optimize application performance and scalability
+Implement security best practices and data protection
+Team Collaboration & Agile Practices
+Participate in daily stand-ups, sprint planning, and retrospectives
+Collaborate with cross-functional teams (Design, QA, Product)
+Utilize version control systems (Git) and project management tools (JIRA)
+Deliver features following agile methodologies
+Testing & Quality Assurance
+Write unit tests, integration tests, and end-to-end tests
+Implement automated testing frameworks (Jest, Cypress, Selenium)
+Ensure application reliability and bug-free releases
+Process & Documentation
+Document technical specifications and API documentation
+Follow coding standards and maintain clean code principles
+Contribute to technical decision-making and architecture discussions
+Required Experience & Skills
+5+ years of experience in full-stack web development
+Strong expertise in React, Node.js, and Python
+Proven experience with PostgreSQL, MongoDB, and cloud platforms (AWS/Azure)
+Experience with Docker, Kubernetes, and CI/CD pipelines
+Strong understanding of RESTful APIs, microservices, and system design
+Excellent problem-solving, debugging, and analytical skills
+Experience with Git, JIRA, and agile development methodologies
+Strong communication skills and ability to work in a team environment

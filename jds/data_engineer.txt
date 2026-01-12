@@ -1,0 +1,45 @@
+Job Title: Data Engineer / Senior Data Engineer
+Location: Bengaluru, India (Hybrid - 3 Days Work from Office)
+Employment Type: Full-time
+Role Summary
+The Data Engineer is accountable for designing, building, and maintaining data pipelines, data warehouses, and ETL processes. This role requires expertise in big data technologies, cloud data platforms, and data processing frameworks to ensure reliable, scalable, and efficient data infrastructure.
+Technology Scope (Must Have)
+Big Data: Apache Spark, Hadoop, Kafka, Airflow
+Cloud Data Platforms: AWS (Redshift, Glue, EMR, S3), Azure (Synapse, Data Factory, Databricks), GCP (BigQuery, Dataflow)
+Databases: PostgreSQL, MySQL, MongoDB, Cassandra
+Data Warehousing: Snowflake, Redshift, BigQuery
+ETL Tools: Apache Airflow, Talend, Informatica, SSIS
+Programming: Python, SQL, Scala, Java
+Containerization: Docker, Kubernetes
+Key Responsibilities
+Data Pipeline Development & Maintenance
+Design and build scalable data pipelines for batch and real-time processing
+Implement ETL/ELT processes to transform and load data
+Ensure data quality, reliability, and performance
+Data Warehouse & Lake Architecture
+Design and maintain data warehouses and data lakes
+Optimize data storage, partitioning, and query performance
+Implement data modeling and schema design
+Data Integration & Processing
+Integrate data from multiple sources (APIs, databases, files)
+Process large volumes of structured and unstructured data
+Implement data validation and error handling
+Monitoring & Optimization
+Monitor data pipeline performance and troubleshoot issues
+Optimize queries and data processing for efficiency
+Implement data governance and quality checks
+Team Collaboration & Process
+Collaborate with data scientists and analysts to understand requirements
+Document data pipelines, schemas, and processes
+Follow agile methodologies and best practices
+Required Experience & Skills
+5+ years of experience in data engineering or ETL development
+Strong expertise in Apache Spark, Hadoop, and big data technologies
+Proven experience with cloud data platforms (AWS, Azure, GCP)
+Proficiency in Python, SQL, and data processing frameworks
+Experience with data warehousing solutions (Snowflake, Redshift, BigQuery)
+Hands-on experience with ETL tools (Airflow, Talend, Informatica)
+Strong understanding of data modeling, schema design, and data architecture
+Excellent problem-solving and debugging skills
+Experience with Docker, Kubernetes, and containerization
+Strong communication skills and ability to work in cross-functional teams
