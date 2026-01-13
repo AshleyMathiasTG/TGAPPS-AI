@@ -80,11 +80,11 @@ def extract_text_from_docx(docx_path):
 
 def extract_text_from_document(doc_path):
     """
-    Extract text from document file (PDF, DOCX, or DOC).
+    Extract text from document file (PDF, DOCX, DOC, or TXT).
     Automatically detects file type based on extension.
     
     Args:
-        doc_path: Path to the document file (PDF, DOCX, or DOC)
+        doc_path: Path to the document file (PDF, DOCX, DOC, or TXT)
     
     Returns:
         str: Extracted text content
@@ -113,8 +113,18 @@ def extract_text_from_document(doc_path):
     elif ext in ['.docx', '.doc']:
         return extract_text_from_docx(doc_path)
     
+    elif ext == '.txt':
+        try:
+            with open(doc_path, 'r', encoding='utf-8') as f:
+                content = f.read()
+                if not content.strip():
+                    raise ValueError(f"Text file '{doc_path}' is empty")
+                return content
+        except Exception as e:
+            raise RuntimeError(f"Failed to extract text from TXT '{doc_path}': {str(e)}")
+    
     else:
-        raise ValueError(f"Unsupported file type: {ext}. Supported formats: .pdf, .docx, .doc")
+        raise ValueError(f"Unsupported file type: {ext}. Supported formats: .pdf, .docx, .doc, .txt")
 
 def extract_text_from_pdf(pdf_path):
     """
@@ -596,10 +606,10 @@ def filter_skills_by_jd(extracted_skills, jd_text):
 
 def parse_resume(doc_path, jd_path=None):
     """
-    Parse resume from document (PDF, DOCX, or DOC) with optional JD-based skill filtering.
+    Parse resume from document (PDF, DOCX, DOC, or TXT) with optional JD-based skill filtering.
     
     Args:
-        doc_path: Path to the resume document file (PDF, DOCX, or DOC)
+        doc_path: Path to the resume document file (PDF, DOCX, DOC, or TXT)
         jd_path: Optional path to Job Description text file
     
     Returns:
@@ -610,7 +620,7 @@ def parse_resume(doc_path, jd_path=None):
         ValueError: If invalid input or API configuration
         RuntimeError: If processing fails
     """
-    # Extract text from document (supports PDF, DOCX, DOC)
+    # Extract text from document (supports PDF, DOCX, DOC, TXT)
     text = extract_text_from_document(doc_path)
 
     # Extract regex-based fields (safe operations)
