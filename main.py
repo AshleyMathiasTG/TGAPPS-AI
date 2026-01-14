@@ -6,6 +6,13 @@ import pdfplumber
 from docx import Document
 from openai import OpenAI, OpenAIError, APIError, RateLimitError, APIConnectionError
 
+# Try to import win32com for .doc file support (Windows only)
+try:
+    import win32com.client
+    WIN32COM_AVAILABLE = True
+except ImportError:
+    WIN32COM_AVAILABLE = False
+
 # -------------------------
 # OPENAI CLIENT (SINGLETON)
 # -------------------------
@@ -78,6 +85,45 @@ def extract_text_from_docx(docx_path):
     except Exception as e:
         raise RuntimeError(f"Failed to extract text from DOCX '{docx_path}': {str(e)}")
 
+def extract_text_from_doc(doc_path):
+    """Extract text from .doc file (older Word format) using win32com (Windows only)."""
+    if not WIN32COM_AVAILABLE:
+        raise RuntimeError(
+            f"Failed to extract text from DOC '{doc_path}': "
+            "win32com is not available. Please install pywin32 package: pip install pywin32"
+        )
+    
+    try:
+        # Use win32com to open Word and extract text
+        word = win32com.client.Dispatch("Word.Application")
+        word.Visible = False
+        word.DisplayAlerts = False
+        
+        # Convert path to absolute path
+        abs_path = os.path.abspath(doc_path)
+        
+        # Open the document
+        doc = word.Documents.Open(abs_path)
+        
+        # Extract text
+        text = doc.Content.Text
+        
+        # Close document and Word
+        doc.Close()
+        word.Quit()
+        
+        if not text or not text.strip():
+            raise ValueError(f"DOC file '{doc_path}' has no extractable text")
+        
+        return text.strip()
+    except Exception as e:
+        # Try to clean up Word if it's still open
+        try:
+            word.Quit()
+        except:
+            pass
+        raise RuntimeError(f"Failed to extract text from DOC '{doc_path}': {str(e)}")
+
 def extract_text_from_document(doc_path):
     """
     Extract text from document file (PDF, DOCX, DOC, or TXT).
@@ -110,8 +156,11 @@ def extract_text_from_document(doc_path):
         except Exception as e:
             raise RuntimeError(f"Failed to extract text from PDF '{doc_path}': {str(e)}")
     
-    elif ext in ['.docx', '.doc']:
+    elif ext == '.docx':
         return extract_text_from_docx(doc_path)
+    
+    elif ext == '.doc':
+        return extract_text_from_doc(doc_path)
     
     elif ext == '.txt':
         try:
@@ -508,13 +557,26 @@ MATCHING RULES:
 3. Match semantically similar skills:
    - JD: "Project Management" → Resume: "Program Management", "PMO" ✓
    - JD: "Process Improvements" → Resume: "Process Improvements", "Process Optimization" ✓
-4. DO NOT match if the skill is NOT in the JD skills list (even if related)
-5. DO NOT add skills that are not in the resume skills list
-6. Return complete skill names from the resume (not partial names)
-7. When in doubt, DO NOT match (prioritize precision)
+4. Match testing tools to testing types (IMPORTANT):
+   - JD: "Load Testing" or "Performance Testing" → Resume: "Load Runner", "JMeter", "Gatling" ✓
+   - JD: "Functional Testing" → Resume: "QTP", "UFT", "Win Runner", "Selenium" ✓
+   - JD: "Automated Testing" or "Automated Web Testing Tools" → Resume: "QTP", "Selenium", "Test Director", "Win Runner", "UFT" ✓
+   - JD: "Regression Testing" → Resume: "QTP", "UFT", "Selenium", "Test Director" ✓
+   - JD: "Integration Testing" → Resume: "Test Director", "QTP", "Selenium" ✓
+   - JD: "UI Testing" → Resume: "QTP", "UFT", "Selenium", "Test Director" ✓
+   - JD: "Cross Browser Testing" → Resume: "Selenium", "QTP", "UFT" ✓
+   - JD: "Test Management" → Resume: "Test Director", "Quality Center", "Jira" ✓
+5. Match tools to their primary use cases:
+   - JD: "SAP" → Resume: "SAP ECC", "SAP S/4HANA", "SAP BASIS" ✓
+   - JD: "Cloud Platforms" → Resume: "AWS", "Azure", "GCP" ✓
+   - JD: "Version Control" → Resume: "Git", "SVN", "ClearCase" ✓
+6. DO NOT match if the skill is NOT in the JD skills list (even if related)
+7. DO NOT add skills that are not in the resume skills list
+8. Return complete skill names from the resume (not partial names)
+9. When in doubt, DO NOT match (prioritize precision)
 
 Return ONLY a JSON array of matching resume skill names, nothing else.
-Example: ["Python 3", "MySQL", "Project Management"]
+Example: ["Python 3", "MySQL", "Load Runner", "QTP"]
 """
     
     user_prompt = f"""JD Skills (extracted from Job Description):
